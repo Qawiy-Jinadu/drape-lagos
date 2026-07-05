@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drape Lagos — Ready-to-Wear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0908;
+    --rose: #c9a49b;
+    --rose-light: #e8d5d0;
+    --rose-pale: #f5eeec;
+    --cream: #faf7f5;
+    --warm-gray: #8a7f7a;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Jost', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--rose);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(201, 164, 155, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    transform: translate(-50%, -50%);
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    mix-blend-mode: normal;
+    transition: background 0.4s;
+  }
+  nav.scrolled { background: rgba(10,9,8,0.85); backdrop-filter: blur(12px); }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--rose); }
+
+  .nav-links {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250,247,245,0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--rose); }
+
+  /* HERO */
+  #hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 700px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 9vw, 9rem);
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 1.2s 0.9s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--rose-light);
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: rgba(250,247,245,0.55);
+    margin-top: 2rem;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s 1.3s forwards;
+  }
+
+  .hero-cta {
+    margin-top: 3.5rem;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1s 1.6s forwards;
+    pointer-events: all;
+  }
+
+  .btn-primary {
+    background: var(--rose);
+    color: var(--black);
+    border: none;
+    padding: 1rem 2.8rem;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: background 0.3s, transform 0.3s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--rose-light); transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(250,247,245,0.3);
+    padding: 1rem 2.8rem;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    transition: border-color 0.3s, color 0.3s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* BLEND TRANSITION */
+  .blend-transition {
+    position: relative;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, var(--cream));
+    margin-top: -200px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* MARQUEE */
+  .marquee-strip {
+    background: var(--rose);
+    padding: 0.9rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-inner {
+    display: inline-flex;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-inner span {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--black);
+    letter-spacing: 0.05em;
+    padding: 0 2.5rem;
+  }
+  .marquee-inner span.dot { font-style: normal; font-size: 0.4rem; vertical-align: middle; }
+
+  /* COLLECTIONS */
+  #collections {
+    background: var(--cream);
+    padding: 8rem 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4rem;
+  }
+
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    color: var(--black);
+    line-height: 1.05;
+  }
+  .section-title em { font-style: italic; color: var(--rose); }
+
+  .section-link {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    text-decoration: none;
+    border-bottom: 1px solid var(--black);
+    padding-bottom: 2px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .section-link:hover { color: var(--rose); border-color: var(--rose); }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-rows: 540px 400px;
+    gap: 1.5rem;
+  }
+
+  .collection-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--rose-pale);
+    cursor: none;
+  }
+
+  .collection-card:first-child {
+    grid-row: 1 / 3;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: block;
+  }
+  .collection-card:hover .card-img { transform: scale(1.05); }
+
+  /* Placeholder images using CSS art */
+  .card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+    background: linear-gradient(160deg, var(--rose-pale) 0%, var(--rose-light) 60%, var(--rose) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-placeholder::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 60%;
+    height: 80%;
+    border-radius: 50% 30% 60% 40%;
+    background: rgba(201,164,155,0.3);
+    transition: transform 0.7s;
+  }
+  .collection-card:hover .card-placeholder::before { transform: scale(1.1) rotate(5deg); }
+
+  .card-placeholder.dark {
+    background: linear-gradient(160deg, #1a1615 0%, #2d2220 60%, #3d2e2b 100%);
+  }
+  .card-placeholder.dark::before { background: rgba(201,164,155,0.15); }
+
+  .card-info {
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-tag {
+    font-family: var(--font-body);
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(250,247,245,0.6);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .card-placeholder:not(.dark) .card-tag { color: rgba(10,9,8,0.5); }
+
+  .card-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+  .card-placeholder:not(.dark) .card-name { color: var(--black); }
+
+  .card-price {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--rose);
+    margin-top: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,9,8,0);
+    transition: background 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .collection-card:hover .card-overlay { background: rgba(10,9,8,0.15); }
+
+  .card-btn {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s 0.05s, transform 0.3s 0.05s;
+    background: var(--rose);
+    color: var(--black);
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+  }
+  .collection-card:hover .card-btn { opacity: 1; transform: translateY(0); }
+
+  /* ABOUT */
+  #about {
+    background: var(--black);
+    padding: 9rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-visual {
+    position: relative;
+    height: 600px;
+  }
+
+  .about-img-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 70%;
+    height: 80%;
+    background: linear-gradient(135deg, #2d2220 0%, #1a1615 50%, #3d2e2b 100%);
+    overflow: hidden;
+  }
+  .about-img-main::after {
+    content: '';
+    position: absolute;
+    bottom: -5%;
+    left: -5%;
+    width: 80%;
+    height: 100%;
+    border-radius: 40% 60% 50% 70%;
+    background: rgba(201,164,155,0.12);
+  }
+
+  .about-img-accent {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 55%;
+    height: 55%;
+    background: var(--rose);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+  }
+
+  .about-accent-text {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(10,9,8,0.25);
+    line-height: 1;
+  }
+
+  .about-year {
+    position: absolute;
+    bottom: 55%;
+    right: 55%;
+    transform: translate(50%, 50%);
+    background: var(--black);
+    border: 1px solid rgba(201,164,155,0.3);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+  .about-year span:first-child {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--rose);
+  }
+  .about-year span:last-child {
+    font-family: var(--font-body);
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    color: var(--warm-gray);
+    text-transform: uppercase;
+  }
+
+  .about-text .section-label { color: var(--rose); }
+  .about-text .section-title { color: var(--cream); margin-bottom: 2rem; }
+
+  .about-body {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.95;
+    color: rgba(250,247,245,0.6);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(250,247,245,0.08);
+    padding-top: 2.5rem;
+  }
+
+  .stat {
+    text-align: center;
+    border-right: 1px solid rgba(250,247,245,0.08);
+    padding: 0 1.5rem;
+  }
+  .stat:last-child { border-right: none; }
+  .stat:first-child { padding-left: 0; text-align: left; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--rose);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-top: 0.4rem;
+  }
+
+  /* FEATURED PIECES */
+  #pieces {
+    background: var(--cream);
+    padding: 8rem 4rem;
+  }
+
+  .pieces-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 4rem;
+  }
+
+  .piece-card {
+    cursor: none;
+    group: true;
+  }
+
+  .piece-img {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: var(--rose-pale);
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .piece-img-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    position: relative;
+  }
+  .piece-card:hover .piece-img-inner { transform: scale(1.04); }
+
+  .piece-num {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    color: rgba(10,9,8,0.3);
+    font-weight: 400;
+  }
+
+  .piece-palette {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .p1 { background: linear-gradient(170deg, #d4b5ae 0%, #b8918a 40%, #9a6e66 100%); }
+  .p2 { background: linear-gradient(170deg, #1a1615 0%, #2d2220 50%, #4a3530 100%); }
+  .p3 { background: linear-gradient(170deg, #e8d5d0 0%, #d4b5ae 50%, #c9a49b 100%); }
+  .p4 { background: linear-gradient(170deg, #2d2220 0%, #3d2e2b 50%, #1a1615 100%); }
+
+  .piece-info { position: relative; z-index: 2; }
+
+  .piece-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--black);
+    margin-bottom: 0.3rem;
+  }
+
+  .piece-category {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+
+  .piece-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+  }
+
+  .piece-price {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--black);
+  }
+
+  .piece-add {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--black);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    transition: background 0.3s, border-color 0.3s;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--black);
+    text-decoration: none;
+  }
+  .piece-add:hover { background: var(--black); color: var(--cream); }
+
+  /* PROCESS */
+  #process {
+    background: var(--black);
+    padding: 8rem 4rem;
+  }
+
+  .process-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .process-inner .section-title { color: var(--cream); }
+  .process-inner .section-label { color: var(--rose); }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 5rem;
+    text-align: left;
+  }
+
+  .step {
+    border-top: 1px solid rgba(250,247,245,0.1);
+    padding-top: 2rem;
+  }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: rgba(201,164,155,0.2);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+  }
+
+  .step-body {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    line-height: 1.85;
+    color: rgba(250,247,245,0.45);
+  }
+
+  /* TESTIMONIAL */
+  #testimonial {
+    background: var(--rose);
+    padding: 7rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .testimonial-inner { max-width: 800px; }
+
+  .quote-mark {
+    font-family: var(--font-display);
+    font-size: 8rem;
+    line-height: 0.5;
+    color: rgba(10,9,8,0.1);
+    margin-bottom: 1.5rem;
+  }
+
+  .testimonial-text {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--black);
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+
+  .testimonial-author {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(10,9,8,0.55);
+  }
+
+  /* CONTACT */
+  #contact {
+    background: var(--cream);
+    padding: 8rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .contact-text .section-title { color: var(--black); margin-bottom: 1.5rem; }
+
+  .contact-detail {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contact-item label {
+    font-family: var(--font-body);
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .contact-item a, .contact-item p {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--black);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .contact-item a:hover { color: var(--rose); }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .form-group label {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(10,9,8,0.2);
+    padding: 0.8rem 0;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--rose); }
+
+  .form-group textarea { resize: none; height: 100px; }
+  .form-group select { cursor: none; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  .form-submit {
+    margin-top: 1rem;
+    background: var(--black);
+    color: var(--cream);
+    border: none;
+    padding: 1.1rem 3rem;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: background 0.3s;
+    align-self: flex-start;
+  }
+  .form-submit:hover { background: var(--rose); color: var(--black); }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    padding: 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(250,247,245,0.06);
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--cream);
+  }
+  .footer-logo span { color: var(--rose); }
+
+  .footer-copy {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: rgba(250,247,245,0.3);
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 2rem;
+  }
+  .footer-social a {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250,247,245,0.4);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-social a:hover { color: var(--rose); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: 0.15s; }
+  .reveal.delay-2 { transition-delay: 0.3s; }
+  .reveal.delay-3 { transition-delay: 0.45s; }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Drape<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#collections">Collections</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#pieces">Pieces</a></li>
+    <li><a href="#contact">Order</a></li>
+  </ul>
+</nav>
+
+<!-- Hero Section -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Lagos · Ready-to-Wear · SS 2025</p>
+    <h1 class="hero-title">Drape<br><em>Lagos</em></h1>
+    <p class="hero-subtitle">Dressed for the woman who moves the city</p>
+    <div class="hero-cta">
+      <a href="#collections" class="btn-primary">View Collections</a>
+      <a href="#contact" class="btn-ghost">Place an Order</a>
+    </div>
+  </div>
+</section>
+
+<!-- Blend transition -->
+<div class="blend-transition"></div>
+
+<!-- Marquee -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Ready-to-Wear</span><span class="dot">●</span>
+    <span>Office Dressing</span><span class="dot">●</span>
+    <span>Semi-Formal</span><span class="dot">●</span>
+    <span>Made for Lagos</span><span class="dot">●</span>
+    <span>Drape Lagos</span><span class="dot">●</span>
+    <span>Ready-to-Wear</span><span class="dot">●</span>
+    <span>Office Dressing</span><span class="dot">●</span>
+    <span>Semi-Formal</span><span class="dot">●</span>
+    <span>Made for Lagos</span><span class="dot">●</span>
+    <span>Drape Lagos</span><span class="dot">●</span>
+    <span>Ready-to-Wear</span><span class="dot">●</span>
+    <span>Office Dressing</span><span class="dot">●</span>
+    <span>Semi-Formal</span><span class="dot">●</span>
+    <span>Made for Lagos</span><span class="dot">●</span>
+    <span>Drape Lagos</span><span class="dot">●</span>
+  </div>
+</div>
+
+<!-- Collections -->
+<section id="collections">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Our Collections</p>
+      <h2 class="section-title">Curated for<br><em>Every Scene</em></h2>
+    </div>
+    <a href="#pieces" class="section-link">Explore All Pieces</a>
+  </div>
+
+  <div class="collections-grid">
+    <div class="collection-card reveal">
+      <div class="card-placeholder dark">
+        <div class="card-overlay"><a href="#contact" class="card-btn">Shop Now</a></div>
+        <div class="card-info">
+          <span class="card-tag">Signature</span>
+          <div class="card-name">The Evening<br>Edit</div>
+          <div class="card-price">From ₦45,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collection-card reveal delay-1">
+      <div class="card-placeholder">
+        <div class="card-overlay"><a href="#contact" class="card-btn">Shop Now</a></div>
+        <div class="card-info">
+          <span class="card-tag">New In</span>
+          <div class="card-name">Office Hours</div>
+          <div class="card-price">From ₦32,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collection-card reveal delay-2">
+      <div class="card-placeholder dark" style="background: linear-gradient(160deg, #c9a49b 0%, #b8918a 60%, #9a6e66 100%);">
+        <div class="card-overlay"><a href="#contact" class="card-btn">Shop Now</a></div>
+        <div class="card-info">
+          <span class="card-tag">Bestseller</span>
+          <div class="card-name">Weekend<br>Luxe</div>
+          <div class="card-price">From ₦28,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collection-card reveal delay-1">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #1a1615 0%, #2d2220 50%, #4a3530 100%);">
+        <div class="card-overlay"><a href="#contact" class="card-btn">Shop Now</a></div>
+        <div class="card-info">
+          <span class="card-tag">Limited</span>
+          <div class="card-name">Formal<br>Affairs</div>
+          <div class="card-price">From ₦55,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collection-card reveal delay-2">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #e8d5d0 0%, #c9a49b 50%, #b8918a 100%);">
+        <div class="card-overlay"><a href="#contact" class="card-btn">Shop Now</a></div>
+        <div class="card-info">
+          <span class="card-tag">Occasion</span>
+          <div class="card-name">The Rose<br>Series</div>
+          <div class="card-price">From ₦38,000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="about-visual reveal">
+    <div class="about-img-main"></div>
+    <div class="about-img-accent">
+      <div class="about-accent-text">Lagos</div>
+    </div>
+    <div class="about-year">
+      <span>2021</span>
+      <span>Est.</span>
+    </div>
+  </div>
+
+  <div class="about-text">
+    <p class="section-label reveal">Our Story</p>
+    <h2 class="section-title reveal">Clothes that carry<br><em>your authority</em></h2>
+    <p class="about-body reveal delay-1">
+      Drape Lagos was born from a simple conviction: the working women of Lagos deserve clothes that match their ambition. Not pieces imported for a different climate, a different body, a different life — but fashion that understands early mornings, long meetings, and dinner plans that don't cancel themselves.
+    </p>
+    <p class="about-body reveal delay-2">
+      Every piece is designed with the modern Lagos professional in mind. Clean lines, luxurious fabrics, silhouettes that move the way you do. Expensive-looking, yes — but made for real life.
+    </p>
+
+    <div class="about-stats reveal delay-3">
+      <div class="stat">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Women Styled</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">40+</div>
+        <div class="stat-label">Active Styles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Customer Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pieces -->
+<section id="pieces">
+  <div class="reveal">
+    <p class="section-label">Current Season</p>
+    <h2 class="section-title" style="color: var(--black);">Featured <em>Pieces</em></h2>
+  </div>
+
+  <div class="pieces-grid">
+    <div class="piece-card reveal">
+      <div class="piece-img">
+        <div class="piece-img-inner p1">
+          <span class="piece-num">01</span>
+        </div>
+      </div>
+      <div class="piece-name">The Drape Blazer</div>
+      <div class="piece-category">Office · Formal</div>
+      <div class="piece-footer">
+        <span class="piece-price">₦48,000</span>
+        <a href="#contact" class="piece-add">+</a>
+      </div>
+    </div>
+
+    <div class="piece-card reveal delay-1">
+      <div class="piece-img">
+        <div class="piece-img-inner p2">
+          <span class="piece-num">02</span>
+        </div>
+      </div>
+      <div class="piece-name">Midi Wrap Dress</div>
+      <div class="piece-category">Semi-Formal · Day-to-Night</div>
+      <div class="piece-footer">
+        <span class="piece-price">₦35,000</span>
+        <a href="#contact" class="piece-add">+</a>
+      </div>
+    </div>
+
+    <div class="piece-card reveal delay-2">
+      <div class="piece-img">
+        <div class="piece-img-inner p3">
+          <span class="piece-num">03</span>
+        </div>
+      </div>
+      <div class="piece-name">Power Trouser Set</div>
+      <div class="piece-category">Office · Professional</div>
+      <div class="piece-footer">
+        <span class="piece-price">₦52,000</span>
+        <a href="#contact" class="piece-add">+</a>
+      </div>
+    </div>
+
+    <div class="piece-card reveal delay-3">
+      <div class="piece-img">
+        <div class="piece-img-inner p4">
+          <span class="piece-num">04</span>
+        </div>
+      </div>
+      <div class="piece-name">Evening Column</div>
+      <div class="piece-category">Formal · Events</div>
+      <div class="piece-footer">
+        <span class="piece-price">₦60,000</span>
+        <a href="#contact" class="piece-add">+</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Process -->
+<section id="process">
+  <div class="process-inner">
+    <p class="section-label reveal">How it Works</p>
+    <h2 class="section-title reveal" style="color: var(--cream);">Simple as it <em>should be</em></h2>
+
+    <div class="process-steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Browse & Select</div>
+        <p class="step-body">Explore our collections and choose the pieces that speak to you. DM us on Instagram or fill the order form below.</p>
+      </div>
+      <div class="step reveal delay-1">
+        <div class="step-num">02</div>
+        <div class="step-title">Confirm Your Order</div>
+        <p class="step-body">We confirm availability, your size, and delivery details. Payment via bank transfer. We respond within 2 hours.</p>
+      </div>
+      <div class="step reveal delay-2">
+        <div class="step-num">03</div>
+        <div class="step-title">Delivered to You</div>
+        <p class="step-body">Your order is packaged beautifully and delivered within Lagos in 2–3 business days. Outside Lagos by arrangement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial -->
+<section id="testimonial">
+  <div class="testimonial-inner reveal">
+    <div class="quote-mark">"</div>
+    <p class="testimonial-text">I wore the Drape blazer to a board meeting and three women asked where I got it. That says everything.</p>
+    <p class="testimonial-author">Adaeze O. — Marketing Director, Victoria Island</p>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="contact-text">
+    <p class="section-label reveal">Get in Touch</p>
+    <h2 class="section-title reveal">Ready to<br><em>place an order?</em></h2>
+    <p class="about-body reveal delay-1" style="color: var(--warm-gray);">Fill in the form or reach us directly. We respond quickly — no long waits, no stress.</p>
+
+    <div class="contact-detail reveal delay-2">
+      <div class="contact-item">
+        <label>Instagram</label>
+        <a href="#">@drapelagos</a>
+      </div>
+      <div class="contact-item">
+        <label>WhatsApp</label>
+        <a href="#">+234 XXX XXX XXXX</a>
+      </div>
+      <div class="contact-item">
+        <label>Delivery Areas</label>
+        <p>Lagos Island · Mainland · VI · Lekki & beyond</p>
+      </div>
+    </div>
+  </div>
+
+  <form class="contact-form reveal delay-1" onsubmit="return false;">
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" placeholder="Amaka">
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" placeholder="Okafor">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="amaka@email.com">
+    </div>
+    <div class="form-group">
+      <label>Phone / WhatsApp</label>
+      <input type="tel" placeholder="+234 801 234 5678">
+    </div>
+    <div class="form-group">
+      <label>What are you interested in?</label>
+      <select>
+        <option>Select a collection</option>
+        <option>The Evening Edit</option>
+        <option>Office Hours</option>
+        <option>Weekend Luxe</option>
+        <option>Formal Affairs</option>
+        <option>The Rose Series</option>
+        <option>Multiple / Not sure yet</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Message (optional)</label>
+      <textarea placeholder="Tell us your size, occasion, any details..."></textarea>
+    </div>
+    <button type="submit" class="form-submit">Send Enquiry</button>
+  </form>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">Drape<span>.</span></div>
+  <p class="footer-copy">© 2025 Drape Lagos. All rights reserved.</p>
+  <div class="footer-social">
+    <a href="#">Instagram</a>
+    <a href="#">WhatsApp</a>
+    <a href="#">TikTok</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .collection-card, .piece-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorRing.style.width = '52px';
+      cursorRing.style.height = '52px';
+      cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorRing.style.width = '32px';
+      cursorRing.style.height = '32px';
+      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
+  });
+
+  // Nav scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 80);
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Three.js Hero
+  (function () {
+    const canvas = document.getElementById('hero-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(0, 0, 6);
+
+    // Background gradient plane (dark)
+    const bgGeo = new THREE.PlaneGeometry(20, 20);
+    const bgMat = new THREE.MeshBasicMaterial({ color: 0x0a0908 });
+    const bgMesh = new THREE.Mesh(bgGeo, bgMat);
+    bgMesh.position.z = -2;
+    scene.add(bgMesh);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xfaf7f5, 0.3);
+    scene.add(ambientLight);
+
+    const roseLight = new THREE.PointLight(0xc9a49b, 3, 15);
+    roseLight.position.set(3, 2, 4);
+    scene.add(roseLight);
+
+    const warmLight = new THREE.PointLight(0xe8d5d0, 1.5, 10);
+    warmLight.position.set(-4, -1, 3);
+    scene.add(warmLight);
+
+    const creamLight = new THREE.DirectionalLight(0xfaf7f5, 0.8);
+    creamLight.position.set(0, 5, 5);
+    scene.add(creamLight);
+
+    // Floating fabric ribbons (torus knots as abstract draped forms)
+    const ribbons = [];
+
+    const ribbonMat = new THREE.MeshPhysicalMaterial({
+      color: 0x1a1410,
+      metalness: 0.1,
+      roughness: 0.4,
+      reflectivity: 0.6,
+      transparent: true,
+      opacity: 0.85,
+    });
+
+    const roseMat = new THREE.MeshPhysicalMaterial({
+      color: 0xc9a49b,
+      metalness: 0.05,
+      roughness: 0.5,
+      transparent: true,
+      opacity: 0.7,
+    });
+
+    const paleMat = new THREE.MeshPhysicalMaterial({
+      color: 0xe8d5d0,
+      metalness: 0.0,
+      roughness: 0.6,
+      transparent: true,
+      opacity: 0.5,
+    });
+
+    // Large central form
+    const geo1 = new THREE.TorusKnotGeometry(1.2, 0.28, 200, 20, 2, 3);
+    const mesh1 = new THREE.Mesh(geo1, ribbonMat);
+    mesh1.position.set(0, 0, 0);
+    scene.add(mesh1);
+    ribbons.push({ mesh: mesh1, rx: 0.002, ry: 0.004, rz: 0.001, floatSpeed: 0.8, floatAmp: 0.15, baseY: 0 });
+
+    // Rose accent ring
+    const geo2 = new THREE.TorusGeometry(1.9, 0.03, 12, 120);
+    const mesh2 = new THREE.Mesh(geo2, roseMat);
+    mesh2.rotation.x = Math.PI * 0.25;
+    scene.add(mesh2);
+    ribbons.push({ mesh: mesh2, rx: 0.001, ry: 0.003, rz: 0.0005, floatSpeed: 0.6, floatAmp: 0.2, baseY: 0 });
+
+    // Outer pale ring
+    const geo3 = new THREE.TorusGeometry(2.6, 0.015, 8, 150);
+    const mesh3 = new THREE.Mesh(geo3, paleMat);
+    mesh3.rotation.x = Math.PI * 0.5;
+    mesh3.rotation.z = Math.PI * 0.3;
+    scene.add(mesh3);
+    ribbons.push({ mesh: mesh3, rx: -0.0008, ry: 0.002, rz: 0.001, floatSpeed: 1.1, floatAmp: 0.08, baseY: 0 });
+
+    // Small orbiting spheres
+    const sphereGeo = new THREE.SphereGeometry(0.06, 16, 16);
+    const sphereMat = new THREE.MeshPhysicalMaterial({ color: 0xc9a49b, metalness: 0.3, roughness: 0.3 });
+    const numSpheres = 8;
+    const spheres = [];
+    for (let i = 0; i < numSpheres; i++) {
+      const s = new THREE.Mesh(sphereGeo, sphereMat.clone());
+      const angle = (i / numSpheres) * Math.PI * 2;
+      const r = 2.2 + Math.random() * 0.8;
+      s.userData = { angle, r, speed: 0.003 + Math.random() * 0.002, yOff: (Math.random() - 0.5) * 2 };
+      scene.add(s);
+      spheres.push(s);
+    }
+
+    // Particle dust
+    const particleCount = 200;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 10;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 5;
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0xc9a49b, size: 0.03, transparent: true, opacity: 0.4 });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    // Mouse influence
+    let targetX = 0, targetY = 0;
+    document.addEventListener('mousemove', e => {
+      targetX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+      targetY = (e.clientY / window.innerHeight - 0.5) * -0.3;
+    });
+
+    // Scroll-based fade and morph
+    let scrollProgress = 0;
+    window.addEventListener('scroll', () => {
+      const heroH = document.getElementById('hero').clientHeight;
+      scrollProgress = Math.min(window.scrollY / heroH, 1);
+    });
+
+    let mouseX = 0, mouseY = 0;
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      mouseX += (targetX - mouseX) * 0.05;
+      mouseY += (targetY - mouseY) * 0.05;
+
+      ribbons.forEach((r, i) => {
+        r.mesh.rotation.x += r.rx + mouseY * 0.01;
+        r.mesh.rotation.y += r.ry + mouseX * 0.01;
+        r.mesh.rotation.z += r.rz;
+        r.mesh.position.y = r.baseY + Math.sin(elapsed * r.floatSpeed) * r.floatAmp;
+        r.mesh.material.opacity = (1 - scrollProgress) * (i === 0 ? 0.85 : i === 1 ? 0.7 : 0.5);
+      });
+
+      spheres.forEach(s => {
+        s.userData.angle += s.userData.speed;
+        s.position.x = Math.cos(s.userData.angle) * s.userData.r + mouseX * 0.5;
+        s.position.y = s.userData.yOff + Math.sin(elapsed * 0.4) * 0.2 + mouseY * 0.3;
+        s.position.z = Math.sin(s.userData.angle) * s.userData.r * 0.5;
+        s.material.opacity = 1 - scrollProgress;
+      });
+
+      particles.rotation.y = elapsed * 0.03;
+      particles.material.opacity = (1 - scrollProgress) * 0.4;
+
+      roseLight.position.x = 3 + Math.sin(elapsed * 0.7) * 2;
+      roseLight.position.y = 2 + Math.cos(elapsed * 0.5) * 1.5;
+
+      camera.position.x += (mouseX * 0.8 - camera.position.x) * 0.03;
+      camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.03;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  })();
+</script>
+</body>
+</html>
