@@ -580,6 +580,8 @@
     position: relative;
   }
   .piece-card:hover .piece-img-inner { transform: scale(1.04); }
+  .piece-img img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+  .piece-card:hover .piece-img img { transform: scale(1.04); }
 
   .piece-num {
     position: absolute;
@@ -1071,11 +1073,10 @@
   <div class="pieces-grid">
     <div class="piece-card reveal">
       <div class="piece-img">
-        <div class="piece-img-inner p1">
-          <span class="piece-num">01</span>
-        </div>
+        <img src="https://i.pinimg.com/1200x/8a/36/15/8a361516a81e4fb8b1babd457aee12a7.jpg" alt="Vintage Suit" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <span class="piece-num">01</span>
       </div>
-      <div class="piece-name">The Drape Blazer</div>
+      <div class="piece-name">Vintage Suit</div>
       <div class="piece-category">Office · Formal</div>
       <div class="piece-footer">
         <span class="piece-price">₦48,000</span>
@@ -1085,11 +1086,10 @@
 
     <div class="piece-card reveal delay-1">
       <div class="piece-img">
-        <div class="piece-img-inner p2">
-          <span class="piece-num">02</span>
-        </div>
+        <img src="https://i.pinimg.com/1200x/f5/4a/9a/f54a9a191c7f3be6044eeeab2d3ee1de.jpg" alt="Drape-sleeve midi dress" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <span class="piece-num">02</span>
       </div>
-      <div class="piece-name">Midi Wrap Dress</div>
+      <div class="piece-name">Drape-sleeve midi dress</div>
       <div class="piece-category">Semi-Formal · Day-to-Night</div>
       <div class="piece-footer">
         <span class="piece-price">₦35,000</span>
@@ -1099,12 +1099,11 @@
 
     <div class="piece-card reveal delay-2">
       <div class="piece-img">
-        <div class="piece-img-inner p3">
-          <span class="piece-num">03</span>
-        </div>
+        <img src="https://i.pinimg.com/736x/f3/0f/e3/f30fe393ec765c9f4c7363dea67dcf55.jpg" alt="Old money Outfit" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <span class="piece-num">03</span>
       </div>
-      <div class="piece-name">Power Trouser Set</div>
-      <div class="piece-category">Office · Professional</div>
+      <div class="piece-name">Old money Outfit</div>
+      <div class="piece-category">Business · Classic</div>
       <div class="piece-footer">
         <span class="piece-price">₦52,000</span>
         <a href="#contact" class="piece-add">+</a>
@@ -1113,9 +1112,8 @@
 
     <div class="piece-card reveal delay-3">
       <div class="piece-img">
-        <div class="piece-img-inner p4">
-          <span class="piece-num">04</span>
-        </div>
+        <img src="https://i.pinimg.com/736x/ab/e6/4d/abe64d4e28076440eaec5c3e74b93907.jpg" alt="Evening Column" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <span class="piece-num">04</span>
       </div>
       <div class="piece-name">Evening Column</div>
       <div class="piece-category">Formal · Events</div>
