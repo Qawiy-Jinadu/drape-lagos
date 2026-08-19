@@ -308,6 +308,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     display: block;
   }
@@ -677,7 +678,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 3rem;
     margin-top: 5rem;
-    text-align: left;
+    text-align: center;
   }
 
   .step {
@@ -915,7 +916,8 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    z-index: 110;
+    z-index: 210;
+    position: relative;
   }
   .hamburger span {
     display: block;
@@ -997,13 +999,16 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw;
+      height: 100vh;
       background: rgba(10,9,8,0.97);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 2.5rem;
-      z-index: 105;
+      z-index: 200;
     }
     .nav-links.open { display: flex; }
     .nav-links a {
@@ -1053,7 +1058,8 @@
       grid-row: auto;
     }
     .collection-card {
-      height: 320px;
+      height: auto;
+      aspect-ratio: 3/4;
     }
 
     /* ABOUT */
@@ -1706,9 +1712,19 @@
     window.addEventListener('resize', () => {
       const w = canvas.clientWidth, h = canvas.clientHeight;
       camera.aspect = w / h;
+      // Dynamically adjust FOV so 3D scene scales with screen width
+      camera.fov = Math.max(35, Math.min(75, 45 * (800 / Math.max(w, 1))));
       camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(w, h);
     });
+    // Fire once on load to set correct initial FOV
+    (function() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      camera.fov = Math.max(35, Math.min(75, 45 * (800 / Math.max(w, 1))));
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    })();
   })();
 </script>
 </body>
