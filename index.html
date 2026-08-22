@@ -378,22 +378,34 @@
     letter-spacing: 0.1em;
   }
 
+  /* Permanent gradient at bottom — texts always readable */
+  .collection-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0) 65%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Hover overlay — expands to fill whole card */
   .card-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(10,9,8,0);
-    transition: background 0.4s;
+    background: rgba(0,0,0,0);
+    transition: background 0.5s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
   }
-  .collection-card:hover .card-overlay { background: rgba(0,0,0,0.20); }
+  .collection-card:hover .card-overlay { background: rgba(0,0,0,0.28); }
 
   .collection-card .card-info {
     position: absolute;
     bottom: 2rem;
     left: 2rem;
-    z-index: 2;
+    z-index: 3;
   }
   .collection-card .card-tag { color: rgba(250,247,245,0.7); }
   .collection-card .card-name { color: var(--cream); text-shadow: 0 1px 8px rgba(10,9,8,0.5); }
