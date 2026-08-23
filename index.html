@@ -42,20 +42,23 @@
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.15s ease, opacity 0.15s;
+    transition: transform 0.15s ease, opacity 0.15s, background 0.3s ease;
     transform: translate(-50%, -50%);
   }
+  .cursor.on-rose { background: var(--black); }
+
   .cursor-ring {
     position: fixed;
     width: 32px;
     height: 32px;
-    border: 1px solid rgba(201, 164, 155, 0.5);
+    border: 1px solid var(--rose);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
-    transition: transform 0.4s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    transition: transform 0.4s ease, width 0.3s, height 0.3s, opacity 0.3s, border-color 0.3s ease;
     transform: translate(-50%, -50%);
   }
+  .cursor-ring.on-rose { border-color: var(--black); }
   body:hover .cursor { opacity: 1; }
 
   /* NAV */
@@ -1512,10 +1515,36 @@
   const cursorRing = document.getElementById('cursor-ring');
   let mx = 0, my = 0, rx = 0, ry = 0;
 
+  // Sections with rose/brown backgrounds where cursor should turn black
+  const roseSections = ['#testimonial', '.marquee-strip', '.btn-primary', '.card-btn'];
+
+  // Send Enquiry — only rose on hover, so track separately
+  const formSubmit = document.querySelector('.form-submit');
+  if (formSubmit) {
+    formSubmit.addEventListener('mouseenter', () => {
+      cursor.classList.add('on-rose');
+      cursorRing.classList.add('on-rose');
+    });
+    formSubmit.addEventListener('mouseleave', () => {
+      cursor.classList.remove('on-rose');
+      cursorRing.classList.remove('on-rose');
+    });
+  }
+
+  function updateCursorColour() {
+    const el = document.elementFromPoint(mx, my);
+    if (!el) return;
+    // Walk up the DOM to check if cursor is inside a rose section
+    const onRose = roseSections.some(sel => el.closest(sel));
+    cursor.classList.toggle('on-rose', onRose);
+    cursorRing.classList.toggle('on-rose', onRose);
+  }
+
   document.addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
     cursor.style.left = mx + 'px';
     cursor.style.top = my + 'px';
+    updateCursorColour();
   });
 
   function animateRing() {
